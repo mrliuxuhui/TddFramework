@@ -15,7 +15,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="b421f" class="javax.swing.JTree" binding="interfaceTree">
+          <component id="b421f" class="com.intellij.ui.treeStructure.Tree" binding="interfaceTree">
             <constraints/>
             <properties/>
           </component>
