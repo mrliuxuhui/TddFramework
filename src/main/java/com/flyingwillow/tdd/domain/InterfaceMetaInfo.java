@@ -33,6 +33,11 @@ public class InterfaceMetaInfo {
         this.leaf = leaf;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
     public static TreeModel buildTree(List<InterfaceMetaInfo> list, Project project) {
         if (CollectionUtils.isEmpty(list)) {
             return new TreeModel(null);
@@ -42,7 +47,8 @@ public class InterfaceMetaInfo {
         rootInfo.setParentId(0);
         rootInfo.setLevel(0);
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootInfo);
-        final List<DefaultMutableTreeNode> nodeList = list.stream().map(e -> new DefaultMutableTreeNode(e, !e.leaf)).collect(Collectors.toList());
+        final List<DefaultMutableTreeNode> nodeList = list.stream()
+                .map(e -> new DefaultMutableTreeNode(e, !e.leaf)).collect(Collectors.toList());
         final Map<String, DefaultMutableTreeNode> infoMap = nodeList.stream()
                 .collect(Collectors.toMap(e -> String.valueOf(((InterfaceMetaInfo) e.getUserObject()).getId()), Function.identity()));
 
@@ -53,7 +59,10 @@ public class InterfaceMetaInfo {
                 root.add(node);
                 node.setParent(root);
             } else {
-                final DefaultMutableTreeNode parent = infoMap.get(String.valueOf(meta.getId()));
+                final DefaultMutableTreeNode parent = infoMap.get(String.valueOf(meta.getParentId()));
+                if(!parent.getAllowsChildren()){
+                    parent.setAllowsChildren(true);
+                }
                 parent.add(node);
                 node.setParent(parent);
             }

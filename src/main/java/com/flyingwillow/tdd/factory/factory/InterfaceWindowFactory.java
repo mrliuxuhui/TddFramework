@@ -17,5 +17,8 @@ public class InterfaceWindowFactory implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(interfaceDesigner.getMainPanel(), "", true);
         toolWindow.getContentManager().addContent(content);
+        //
+
+
     }
 }

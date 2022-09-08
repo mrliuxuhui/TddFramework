@@ -2,12 +2,15 @@ package com.flyingwillow.tdd.factory;
 
 import com.flyingwillow.tdd.domain.InterfaceMetaInfo;
 import com.flyingwillow.tdd.service.InterfaceMetaService;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.packageDependencies.ui.TreeModel;
 import com.intellij.ui.treeStructure.Tree;
+import icons.JavaUltimateIcons;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import java.util.List;
 
 public class InterfaceDesigner {
@@ -36,6 +39,13 @@ public class InterfaceDesigner {
         final List<InterfaceMetaInfo> list = interfaceMetaService.selectAll(project);
         final TreeModel model = InterfaceMetaInfo.buildTree(list, project);
         interfaceTree.setModel(model);
+        DefaultTreeCellRenderer render = new DefaultTreeCellRenderer();
+        render.setLeafIcon(JavaUltimateIcons.Web.RequestMapping);
+        render.setOpenIcon(AllIcons.Nodes.WebFolder);
+        render.setClosedIcon(AllIcons.Nodes.WebFolder);
+        interfaceTree.setCellRenderer(render);
+        //
+        interfaceTree.setDragEnabled(true);
     }
 
     private void createUIComponents() {
