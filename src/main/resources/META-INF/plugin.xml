@@ -14,7 +14,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow factoryClass="com.flyingwillow.tdd.factory.factory.InterfaceWindowFactory"
+        <toolWindow factoryClass="com.flyingwillow.tdd.factory.InterfaceWindowFactory"
                     anchor="right"
                     secondary="true"
                     icon="AllIcons.General.Layout"
@@ -24,5 +24,17 @@
 
     <actions>
         <!-- Add your actions here -->
+        <group id="interface-toolbar" description="toolbar">
+            <action
+                    class="com.flyingwillow.tdd.action.ToolbarAction"
+                    id="close-all"
+                    text="close-all"
+                    icon="AllIcons.Actions.Collapseall"/>
+            <action
+                    class="com.flyingwillow.tdd.action.ToolbarAction"
+                    id="expand-all"
+                    text="expand-all"
+                    icon="AllIcons.Actions.Expandall"/>
+        </group>
     </actions>
 </idea-plugin>

@@ -1,6 +1,6 @@
-package com.flyingwillow.tdd.factory.factory;
+package com.flyingwillow.tdd.factory;
 
-import com.flyingwillow.tdd.factory.InterfaceDesigner;
+import com.flyingwillow.tdd.service.ComponentSearchService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -13,12 +13,12 @@ public class InterfaceWindowFactory implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
 
         // show content
-        InterfaceDesigner interfaceDesigner = new InterfaceDesigner(project, toolWindow);
+        InterfaceDesignerContent designerContent = new InterfaceDesignerContent(project, toolWindow);
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(interfaceDesigner.getMainPanel(), "", true);
+        Content content = contentFactory.createContent(designerContent.getMainPanel(), "", true);
         toolWindow.getContentManager().addContent(content);
         //
-
-
+        final ComponentSearchService service = project.getService(ComponentSearchService.class);
+        service.setContent(designerContent);
     }
 }
