@@ -36,5 +36,28 @@
                     text="expand-all"
                     icon="AllIcons.Actions.Expandall"/>
         </group>
+
+        <group id="interface.popup.menu" description="popup menu">
+            <action class="com.flyingwillow.tdd.action.ClassAddAction"
+                    id="interface.popup.class.add"
+                    text="class add"
+                    icon="AllIcons.General.Add"/>
+            <action class="com.flyingwillow.tdd.action.PackageDeleteAction"
+                    id="interface.popup.package.del"
+                    text="package delete"
+                    icon="AllIcons.Actions.GC"/>
+            <action class="com.flyingwillow.tdd.action.MethodAddAction"
+                    id="interface.popup.method.add"
+                    text="method add"
+                    icon="AllIcons.General.Add"/>
+            <action class="com.flyingwillow.tdd.action.ClassDeleteAction"
+                    id="interface.popup.class.del"
+                    text="class delete"
+                    icon="AllIcons.Actions.GC"/>
+            <action class="com.flyingwillow.tdd.action.MethodDeleteAction"
+                    id="interface.popup.method.del"
+                    text="method delete"
+                    icon="AllIcons.Actions.GC"/>
+        </group>
     </actions>
 </idea-plugin>

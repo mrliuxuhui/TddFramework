@@ -21,16 +21,18 @@ public class InterfaceMetaInfo {
     private Integer parentId;
     private Integer level;
     private Boolean leaf = true;
+    private InterfaceMetaType type;
 
     public InterfaceMetaInfo() {
     }
 
-    public InterfaceMetaInfo(Integer id, String name, Integer parentId, Integer level, Boolean leaf) {
+    public InterfaceMetaInfo(Integer id, String name, Integer parentId, Integer level, Boolean leaf, InterfaceMetaType type) {
         this.id = id;
         this.name = name;
         this.parentId = parentId;
         this.level = level;
         this.leaf = leaf;
+        this.type = type;
     }
 
     @Override
@@ -46,6 +48,7 @@ public class InterfaceMetaInfo {
         rootInfo.setName(project.getName());
         rootInfo.setParentId(0);
         rootInfo.setLevel(0);
+        rootInfo.setType(InterfaceMetaType.ROOT);
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootInfo);
         final List<DefaultMutableTreeNode> nodeList = list.stream()
                 .map(e -> new DefaultMutableTreeNode(e, !e.leaf)).collect(Collectors.toList());
