@@ -14,4 +14,8 @@ public enum InterfaceMetaType {
         this.value = value;
         this.desc = desc;
     }
+
+    public static boolean match(InterfaceMetaType source, InterfaceMetaType target){
+        return target.value - source.value == -1;
+    }
 }

@@ -64,7 +64,7 @@ public class InterfaceDesignerContent {
         interfaceTree.setPaintBusy(false);
 
         // drag listener
-
+        interfaceTree.setTransferHandler(new InterfaceTreeTransferHandler(interfaceTree));
     }
 
     private void loadingTree() {
@@ -79,6 +79,7 @@ public class InterfaceDesignerContent {
         interfaceTree.setRowHeight(20);
         //
         interfaceTree.setDragEnabled(true);
+        interfaceTree.setDropMode(DropMode.ON);
     }
 
     private void createMainPanel() {
@@ -122,11 +123,11 @@ public class InterfaceDesignerContent {
             panel.add(buttonGroup);
 
             if (metaInfo.getType() == InterfaceMetaType.PACKAGE) {
-                createActionButton(Arrays.asList("interface.popup.class.add", "interface.popup.package.del")).forEach(com -> buttonGroup.add(com));
+                createActionButton(Arrays.asList("interface.popup.class.add", "interface.popup.package.del")).forEach(buttonGroup::add);
             } else if (metaInfo.getType() == InterfaceMetaType.CONTROLLER) {
-                createActionButton(Arrays.asList("interface.popup.method.add", "interface.popup.class.del")).forEach(com -> buttonGroup.add(com));
+                createActionButton(Arrays.asList("interface.popup.method.add", "interface.popup.class.del")).forEach(buttonGroup::add);
             } else if (metaInfo.getType() == InterfaceMetaType.INTERFACE) {
-                createActionButton(Arrays.asList("interface.popup.method.del")).forEach(com -> buttonGroup.add(com));
+                createActionButton(Arrays.asList("interface.popup.method.del")).forEach(buttonGroup::add);
             } else {
                 return this;
             }
