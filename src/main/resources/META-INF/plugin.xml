@@ -58,6 +58,14 @@
                     id="interface.popup.method.del"
                     text="method delete"
                     icon="AllIcons.Actions.GC"/>
+            <action class="com.flyingwillow.tdd.action.MethodEditAction"
+                    id="interface.popup.method.edit"
+                    text="method edit"
+                    icon="AllIcons.Actions.Edit"/>
+            <action class="com.flyingwillow.tdd.action.MethodEditTestAction"
+                    id="interface.popup.method.edit.test"
+                    text="method test case edit"
+                    icon="MyIcons.EditTest"/>
         </group>
     </actions>
 </idea-plugin>
