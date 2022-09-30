@@ -15,11 +15,13 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.packageDependencies.ui.TreeModel;
 import com.intellij.ui.treeStructure.Tree;
 import icons.JavaUltimateIcons;
 import org.apache.commons.collections.CollectionUtils;
@@ -28,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
@@ -69,19 +72,24 @@ public class InterfaceDesignerContent {
         if (CollectionUtils.isEmpty(moduleList)) {
             interfaceTree.getEmptyText().setText(interfaceMetaService.getErrorMsg(-1));
         } else {
-            loadingTree(moduleList.get(0));
-            // drag and drop config
-            interfaceTree.setTransferHandler(new InterfaceTreeTransferHandler(interfaceTree));
-            interfaceTree.setDragEnabled(true);
-            interfaceTree.setDropMode(DropMode.ON);
+
+            interfaceTree.setPaintBusy(true);
+            ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                DumbService.getInstance(project).waitForSmartMode();
+                ApplicationManager.getApplication().runReadAction(() -> {
+                    loadingTree(moduleList.get(0));
+                    interfaceTree.setPaintBusy(false);
+                });
+            });
         }
     }
 
     private void loadingTree(Module module) {
-        interfaceTree.setPaintBusy(true);
-        final List<InterfaceMetaInfo> list = interfaceMetaService.selectAll(project);
+//        interfaceTree.setPaintBusy(true);
+//        final List<InterfaceMetaInfo> list = interfaceMetaService.selectAll(project);
 
-        final TreeModel model = InterfaceMetaInfo.buildTree(list, project);
+//        final TreeModel model = InterfaceMetaInfo.buildTree(list, module);
+        final TreeModel model = interfaceMetaService.loadTree(module);
         interfaceTree.setModel(model);
         InterfaceCellRender render = new InterfaceCellRender();
         render.setLeafIcon(JavaUltimateIcons.Web.RequestMapping);
@@ -89,7 +97,12 @@ public class InterfaceDesignerContent {
         render.setClosedIcon(AllIcons.Nodes.WebFolder);
         interfaceTree.setCellRenderer(render);
         interfaceTree.setRowHeight(20);
-        interfaceTree.setPaintBusy(false);
+
+        // drag and drop config
+        interfaceTree.setTransferHandler(new InterfaceTreeTransferHandler(interfaceTree));
+        interfaceTree.setDragEnabled(true);
+        interfaceTree.setDropMode(DropMode.ON);
+//        interfaceTree.setPaintBusy(false);
     }
 
     private void reloadTree(Module module) {

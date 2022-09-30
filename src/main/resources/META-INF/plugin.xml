@@ -4,13 +4,14 @@
     <vendor email="mrliuxuhui@gmail.com" url="http://www.flyingwillow.com">Flyingwillow</vendor>
 
     <description><![CDATA[
-        Enter short description for your plugin here.<br>
-        <em>most HTML tags may be used</em>
+        Manage you apis easily and generate it test easily.<br>
+        <em>Enjoy it!</em>
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
