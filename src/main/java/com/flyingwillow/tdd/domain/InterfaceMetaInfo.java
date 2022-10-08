@@ -1,16 +1,12 @@
 package com.flyingwillow.tdd.domain;
 
 import com.flyingwillow.tdd.service.InterfaceNameReader;
-import com.intellij.openapi.project.Project;
 import com.intellij.packageDependencies.ui.TreeModel;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.util.PsiUtil;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -70,8 +66,8 @@ public class InterfaceMetaInfo {
         this.level = 1;
         this.parentId = null;
         this.name = CollectionUtils.isNotEmpty(javaFiles) ? reader.getPackageName(javaFiles.get(0)) : packageName;
-        if(this.name.contains(".")){
-            this.name = this.name.substring(this.name.lastIndexOf(".")+1);
+        if (this.name.contains(".")) {
+            this.name = this.name.substring(this.name.lastIndexOf(".") + 1);
         }
         this.target = null;
     }
@@ -104,7 +100,7 @@ public class InterfaceMetaInfo {
                 node.setParent(root);
             } else {
                 final DefaultMutableTreeNode parent = infoMap.get(String.valueOf(meta.getParentId()));
-                if(!parent.getAllowsChildren()){
+                if (!parent.getAllowsChildren()) {
                     parent.setAllowsChildren(true);
                 }
                 parent.add(node);

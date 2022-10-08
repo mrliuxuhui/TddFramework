@@ -19,10 +19,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.messages.Topic;
 import icons.JavaUltimateIcons;
 import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,8 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class InterfaceDesignerContent {
@@ -67,30 +70,14 @@ public class InterfaceDesignerContent {
     private void createTree() {
         this.interfaceTree = new Tree();
         this.mainPanel.setContent(this.interfaceTree);
-        //
+
         final List<Module> moduleList = interfaceMetaService.getValidModules(project);
         if (CollectionUtils.isEmpty(moduleList)) {
             interfaceTree.getEmptyText().setText(interfaceMetaService.getErrorMsg(-1));
         } else {
-
-            interfaceTree.setPaintBusy(true);
-            ApplicationManager.getApplication().executeOnPooledThread(() -> {
-                DumbService.getInstance(project).waitForSmartMode();
-                ApplicationManager.getApplication().runReadAction(() -> {
-                    loadingTree(moduleList.get(0));
-                    interfaceTree.setPaintBusy(false);
-                });
-            });
+            loadingTree(moduleList.get(0));
         }
-    }
-
-    private void loadingTree(Module module) {
-//        interfaceTree.setPaintBusy(true);
-//        final List<InterfaceMetaInfo> list = interfaceMetaService.selectAll(project);
-
-//        final TreeModel model = InterfaceMetaInfo.buildTree(list, module);
-        final TreeModel model = interfaceMetaService.loadTree(module);
-        interfaceTree.setModel(model);
+        //
         InterfaceCellRender render = new InterfaceCellRender();
         render.setLeafIcon(JavaUltimateIcons.Web.RequestMapping);
         render.setOpenIcon(AllIcons.Nodes.WebFolder);
@@ -102,12 +89,25 @@ public class InterfaceDesignerContent {
         interfaceTree.setTransferHandler(new InterfaceTreeTransferHandler(interfaceTree));
         interfaceTree.setDragEnabled(true);
         interfaceTree.setDropMode(DropMode.ON);
-//        interfaceTree.setPaintBusy(false);
     }
 
-    private void reloadTree(Module module) {
-        loadingTree(module);
-        interfaceTree.validate();
+    private void loadingTree(Module module) {
+        interfaceTree.setPaintBusy(true);
+
+        final Future<TreeModel> treeModelFuture = ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            DumbService.getInstance(project).waitForSmartMode();
+            return ApplicationManager.getApplication().runReadAction(
+                    (Computable<TreeModel>) () -> interfaceMetaService.loadTree(module));
+        });
+
+        DumbService.getInstance(project).smartInvokeLater(() -> {
+            try {
+                interfaceTree.setModel(treeModelFuture.get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+            interfaceTree.setPaintBusy(false);
+        });
     }
 
     private void createMainPanel() {
@@ -124,6 +124,12 @@ public class InterfaceDesignerContent {
         final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLWINDOW_TOOLBAR_BAR, group, true);
         toolbar.setTargetComponent(mainPanel);
         mainPanel.setToolbar(toolbar.getComponent());
+    }
+
+    public interface TreeModelUpdateNotifier {
+        Topic<TreeModelUpdateNotifier> TREE_MODEL_UPDATE_TOPIC = Topic.create("tree model data changed", TreeModelUpdateNotifier.class);
+
+        void onChange(TreeModel treeModel);
     }
 
     public SimpleToolWindowPanel getMainPanel() {
@@ -144,6 +150,9 @@ public class InterfaceDesignerContent {
             // install actions
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
             final InterfaceMetaInfo metaInfo = (InterfaceMetaInfo) node.getUserObject();
+            if (Objects.isNull(metaInfo)) {
+                return this;
+            }
             this.setText(metaInfo.getName());
             JPanel panel = new JPanel();
             panel.setLayout(new GridLayout(1, 2));
@@ -157,6 +166,9 @@ public class InterfaceDesignerContent {
             buttonGroup.setBackground(UIManager.getColor("Tree.textBackground"));
             panel.add(buttonGroup);
 
+            if (metaInfo.getType() == InterfaceMetaType.ROOT) {
+                setIcon(AllIcons.Nodes.Module);
+            }
             if (metaInfo.getType() == InterfaceMetaType.PACKAGE) {
                 createActionButton(Arrays.asList("interface.popup.class.add", "interface.popup.package.del")).forEach(buttonGroup::add);
             } else if (metaInfo.getType() == InterfaceMetaType.CONTROLLER) {
@@ -202,7 +214,7 @@ public class InterfaceDesignerContent {
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             this.dropdownCombobox.setSelectedItem(this.module);
-            reloadTree(this.module);
+            loadingTree(this.module);
         }
     }
 
