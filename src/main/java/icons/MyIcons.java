@@ -5,6 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public final class MyIcons {
+public interface MyIcons {
     @NotNull Icon EditTest = IconLoader.getIcon("/icons/edit.svg", MyIcons.class);
 }

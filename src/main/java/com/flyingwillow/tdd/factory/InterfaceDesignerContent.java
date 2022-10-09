@@ -3,6 +3,8 @@ package com.flyingwillow.tdd.factory;
 import com.flyingwillow.tdd.domain.InterfaceMetaInfo;
 import com.flyingwillow.tdd.domain.InterfaceMetaType;
 import com.flyingwillow.tdd.service.InterfaceMetaService;
+import com.intellij.codeInsight.daemon.impl.PsiElementListNavigator;
+import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.core.CoreBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -24,6 +26,7 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.Topic;
+import com.intellij.util.ui.tree.TreeUtil;
 import icons.JavaUltimateIcons;
 import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +35,10 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -89,6 +95,19 @@ public class InterfaceDesignerContent {
         interfaceTree.setTransferHandler(new InterfaceTreeTransferHandler(interfaceTree));
         interfaceTree.setDragEnabled(true);
         interfaceTree.setDropMode(DropMode.ON);
+
+        // setup click listener
+        interfaceTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // double click to locate
+                final TreePath path = TreeUtil.getPathForLocation(interfaceTree, e.getX(), e.getY());
+                final InterfaceMetaInfo metaInfo = (InterfaceMetaInfo) TreeUtil.getLastUserObject(path);
+                if(e.getClickCount()>1 && Objects.nonNull(metaInfo) && metaInfo.getType() == InterfaceMetaType.INTERFACE){
+                    NavigationUtil.activateFileWithPsiElement(metaInfo.getTarget());
+                }
+            }
+        });
     }
 
     private void loadingTree(Module module) {
