@@ -3,14 +3,16 @@ package com.flyingwillow.tdd.factory;
 import com.flyingwillow.tdd.service.InterfaceMetaService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.ui.treeStructure.Tree;
 
 import javax.swing.*;
 
 public class InterfaceDesigner {
     private JPanel mainPanel;
-    private JScrollPane container;
-    private Tree interfaceTree;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JComboBox comboBox1;
+    private JTabbedPane tabbedPane1;
+    private JTable table1;
 
     private Project project;
     private ToolWindow toolWindow;

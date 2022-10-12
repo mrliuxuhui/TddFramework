@@ -1,6 +1,7 @@
 package com.flyingwillow.tdd.domain;
 
 import com.flyingwillow.tdd.service.InterfaceNameReader;
+import com.flyingwillow.tdd.util.HttpMethodEnum;
 import com.intellij.packageDependencies.ui.TreeModel;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -25,7 +26,11 @@ public class InterfaceMetaInfo {
     private Boolean leaf = true;
     private InterfaceMetaType type;
 
+    private HttpMethodEnum httpMethod;
+
     private PsiElement target;
+
+    private PsiClass psiClass;
 
     public InterfaceMetaInfo() {
     }
@@ -47,6 +52,7 @@ public class InterfaceMetaInfo {
         this.parentId = reader.getPackageId(javaFile);
         this.name = reader.getControllerName(cls);
         this.target = cls;
+        this.psiClass = cls;
     }
 
     public InterfaceMetaInfo(PsiMethod method, PsiClass javaClass, InterfaceNameReader reader) {
@@ -57,6 +63,8 @@ public class InterfaceMetaInfo {
         this.parentId = reader.getControllerId(javaClass);
         this.name = reader.getInterfaceName(method, javaClass);
         this.target = method;
+        this.psiClass = javaClass;
+        this.httpMethod = reader.getHttpMethod(method);
     }
 
     public InterfaceMetaInfo(String packageName, List<PsiJavaFile> javaFiles, InterfaceNameReader reader) {
@@ -70,6 +78,7 @@ public class InterfaceMetaInfo {
             this.name = this.name.substring(this.name.lastIndexOf(".") + 1);
         }
         this.target = null;
+        this.psiClass = null;
     }
 
     @Override

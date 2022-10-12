@@ -21,6 +21,7 @@
                     icon="AllIcons.General.Layout"
                     id="interface-window">
         </toolWindow>
+        <fileEditorProvider implementation="com.flyingwillow.tdd.editor.InterfaceEditorProvider"/>
     </extensions>
 
     <actions>
@@ -38,7 +39,7 @@
                     icon="AllIcons.Actions.Expandall"/>
         </group>
 
-        <group id="interface.popup.menu" description="popup menu">
+        <group id="interface.popup.menu" description="popup menu" class="com.flyingwillow.tdd.action.InterfaceTreeActionGroup">
             <action class="com.flyingwillow.tdd.action.ClassAddAction"
                     id="interface.popup.class.add"
                     text="class add"

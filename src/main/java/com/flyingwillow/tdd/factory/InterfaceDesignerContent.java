@@ -7,6 +7,7 @@ import com.intellij.codeInsight.daemon.impl.PsiElementListNavigator;
 import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.core.CoreBundle;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -24,10 +25,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.ui.PopupHandler;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.Topic;
 import com.intellij.util.ui.tree.TreeUtil;
 import icons.JavaUltimateIcons;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class InterfaceDesignerContent {
 
     private SimpleToolWindowPanel mainPanel;
@@ -108,6 +112,8 @@ public class InterfaceDesignerContent {
                 }
             }
         });
+
+        PopupHandler.installPopupMenu(interfaceTree, (ActionGroup) ActionManager.getInstance().getAction("interface.popup.menu"), "My Actions");
     }
 
     private void loadingTree(Module module) {
@@ -173,33 +179,7 @@ public class InterfaceDesignerContent {
                 return this;
             }
             this.setText(metaInfo.getName());
-            JPanel panel = new JPanel();
-            panel.setLayout(new GridLayout(1, 2));
-            panel.setOpaque(false);
-            panel.setBackground(UIManager.getColor("Tree.textBackground"));
-            panel.add(super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus));
-
-            JPanel buttonGroup = new JPanel();
-            buttonGroup.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 1));
-            buttonGroup.setOpaque(false);
-            buttonGroup.setBackground(UIManager.getColor("Tree.textBackground"));
-            panel.add(buttonGroup);
-
-            if (metaInfo.getType() == InterfaceMetaType.ROOT) {
-                setIcon(AllIcons.Nodes.Module);
-            }
-            if (metaInfo.getType() == InterfaceMetaType.PACKAGE) {
-                createActionButton(Arrays.asList("interface.popup.class.add", "interface.popup.package.del")).forEach(buttonGroup::add);
-            } else if (metaInfo.getType() == InterfaceMetaType.CONTROLLER) {
-                createActionButton(Arrays.asList("interface.popup.method.add", "interface.popup.class.del")).forEach(buttonGroup::add);
-            } else if (metaInfo.getType() == InterfaceMetaType.INTERFACE) {
-                createActionButton(Arrays.asList("interface.popup.method.edit"
-                        , "interface.popup.method.edit.test"
-                        , "interface.popup.method.del")).forEach(buttonGroup::add);
-            } else {
-                return this;
-            }
-            return panel;
+            return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         }
 
         @NotNull
@@ -211,6 +191,12 @@ public class InterfaceDesignerContent {
                         final Presentation presentation = addAction.getTemplatePresentation();
                         ActionButton addBtn = new ActionButton(addAction, presentation, ActionPlaces.UNKNOWN, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
                         presentation.putClientProperty("SWING_BUTTON_KEY", addBtn);
+                        addBtn.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                log.warn("count : {}", e.getClickCount());
+                            }
+                        });
                         return addBtn;
                     }).collect(Collectors.toList());
         }
