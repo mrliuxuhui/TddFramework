@@ -16,9 +16,7 @@ public class MethodEditAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         final InterfaceMetaInfo metaInfo = ToolkitUtil.getMetaFromActionEvent(e);
         if (Objects.nonNull(metaInfo) && metaInfo.getType() == InterfaceMetaType.INTERFACE) {
-            final InterfaceVirtualFile file = new InterfaceVirtualFile(metaInfo);
-            FileEditorManager.getInstance(e.getProject()).openFile(file, true);
+            FileEditorManager.getInstance(e.getProject()).openFile(metaInfo.getVirtualFile(), true);
         }
-
     }
 }

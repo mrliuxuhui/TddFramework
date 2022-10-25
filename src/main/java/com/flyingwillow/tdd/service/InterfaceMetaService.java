@@ -59,11 +59,13 @@ public final class InterfaceMetaService {
                 .collect(Collectors.toList());
 
         final Map<PsiJavaFile, PsiClass> classList = javaFiles.stream().collect(Collectors.toMap(f -> f, f -> reader.getMainClass(f)));
-        final List<InterfaceMetaInfo> controllerList = classList.entrySet().stream().map(e -> new InterfaceMetaInfo(e.getKey(), reader, e.getValue())).collect(Collectors.toList());
-        final List<InterfaceMetaInfo> interfaceList = classList.entrySet().stream().flatMap(e -> createInterface(e.getValue())).collect(Collectors.toList());
+        final List<InterfaceMetaInfo> controllerList = classList.entrySet()
+                .stream().map(e -> new InterfaceMetaInfo(module.getProject(), e.getKey(), reader, e.getValue())).collect(Collectors.toList());
+        final List<InterfaceMetaInfo> interfaceList = classList.entrySet()
+                .stream().flatMap(e -> createInterface(module.getProject(), e.getValue())).collect(Collectors.toList());
         final List<InterfaceMetaInfo> packageList = new ArrayList<>();
         javaFiles.stream().collect(Collectors.groupingBy(f -> f.getPackageName()))
-                .forEach((key, list) -> packageList.add(new InterfaceMetaInfo(key, list, reader)));
+                .forEach((key, list) -> packageList.add(new InterfaceMetaInfo(module.getProject(), key, list, reader)));
 
         List<InterfaceMetaInfo> list = new ArrayList<>(controllerList.size() + interfaceList.size() + packageList.size());
         list.addAll(packageList);
@@ -72,9 +74,9 @@ public final class InterfaceMetaService {
         return InterfaceMetaInfo.buildTree(list, module);
     }
 
-    private Stream<InterfaceMetaInfo> createInterface(PsiClass javaClass) {
+    private Stream<InterfaceMetaInfo> createInterface(Project project, PsiClass javaClass) {
         return Arrays.stream(javaClass.getMethods()).filter(m -> reader.isValidInterface(m))
-                .map(m -> new InterfaceMetaInfo(m, javaClass, reader));
+                .map(m -> new InterfaceMetaInfo(project, m, javaClass, reader));
     }
 
     private DefaultMutableTreeNode createRootNode(Module module) {

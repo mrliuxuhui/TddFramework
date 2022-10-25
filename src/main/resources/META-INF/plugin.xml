@@ -67,7 +67,7 @@
             <action class="com.flyingwillow.tdd.action.MethodEditTestAction"
                     id="interface.popup.method.edit.test"
                     text="method test case edit"
-                    icon="MyIcons.EditTest"/>
+                    icon="AllIcons.Nodes.Test"/>
         </group>
     </actions>
 </idea-plugin>

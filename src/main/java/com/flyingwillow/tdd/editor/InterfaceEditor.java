@@ -4,7 +4,9 @@ import com.flyingwillow.tdd.provider.InterfaceDataProvider;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -14,14 +16,18 @@ import javax.swing.*;
 import java.beans.PropertyChangeListener;
 
 
-public class InterfaceEditor implements FileEditor {
+public class InterfaceEditor extends UserDataHolderBase implements FileEditor {
 
     private InterfaceVirtualFile file;
 
+    private Project project;
+
     private InterfaceEditorPanel editorPanel;
 
-    public InterfaceEditor() {
-        this.editorPanel = new InterfaceEditorPanel();
+    public InterfaceEditor(Project project, InterfaceVirtualFile file) {
+        this.file = file;
+        this.project = project;
+        this.editorPanel = new InterfaceEditorPanel(project, file.getDataProvider());
     }
 
     public void setFile(InterfaceVirtualFile file) {
@@ -49,7 +55,6 @@ public class InterfaceEditor implements FileEditor {
 
     @Override
     public void setState(@NotNull FileEditorState state) {
-
     }
 
     @Override

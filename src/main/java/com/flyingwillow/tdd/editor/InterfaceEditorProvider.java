@@ -21,11 +21,7 @@ public class InterfaceEditorProvider implements FileEditorProvider, DumbAware {
 
     @Override
     public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
-        final InterfaceEditorService service = project.getService(InterfaceEditorService.class);
-        final InterfaceEditor editor = service.getInstance();
-        editor.setFile((InterfaceVirtualFile) file);
-        editor.updateData(((InterfaceVirtualFile) file).getDataProvider());
-        return editor;
+        return new InterfaceEditor(project, (InterfaceVirtualFile) file);
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.flyingwillow.tdd.provider.InterfaceDataProvider;
 
 public interface InterfaceEditorPanelInitializer {
 
-    void initPanel();
+    void initPanel(InterfaceDataProvider dataProvider);
 
     void updateData(InterfaceDataProvider dataProvider);
 

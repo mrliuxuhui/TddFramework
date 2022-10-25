@@ -17,11 +17,4 @@ public final class InterfaceEditorService {
     public InterfaceEditorService(Project project){
         this.project = project;
     }
-
-    public InterfaceEditor getInstance(){
-        if(Objects.isNull(instance)){
-            this.instance = new InterfaceEditor();
-        }
-        return this.instance;
-    }
 }
