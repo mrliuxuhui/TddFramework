@@ -22,6 +22,7 @@
                     id="interface-window">
         </toolWindow>
         <fileEditorProvider implementation="com.flyingwillow.tdd.editor.InterfaceEditorProvider"/>
+        <fileIconProvider implementation="com.flyingwillow.tdd.editor.InterfaceVirtualFileIconProvider"/>
     </extensions>
 
     <actions>
