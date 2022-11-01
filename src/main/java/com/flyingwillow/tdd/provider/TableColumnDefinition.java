@@ -2,12 +2,14 @@ package com.flyingwillow.tdd.provider;
 
 import com.flyingwillow.tdd.domain.FieldDataType;
 import com.flyingwillow.tdd.domain.ParameterItem;
-import com.intellij.ide.util.scopeChooser.PackageSetChooserCombo;
+import com.flyingwillow.tdd.resource.InterfaceBundle;
+import com.intellij.ide.util.PackageUtil;
+import com.intellij.java.JavaBundle;
 import com.intellij.openapi.util.NlsContexts;
-import com.intellij.psi.search.scope.packageSet.CustomScopesProviderEx;
-import com.intellij.psi.search.scope.packageSet.NamedScope;
+import com.intellij.refactoring.move.moveClassesOrPackages.DestinationFolderComboBox;
+import com.intellij.refactoring.ui.PackageNameReferenceEditorCombo;
 import com.intellij.ui.BooleanTableCellEditor;
-import com.intellij.ui.components.editors.JBComboBoxTableCellEditorComponent;
+import com.intellij.ui.ReferenceEditorComboWithBrowseButton;
 import com.intellij.util.ui.AbstractTableCellEditor;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.table.ComboBoxTableCellEditor;
@@ -17,7 +19,6 @@ import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -34,36 +35,47 @@ public final class TableColumnDefinition<T> extends ColumnInfo<DefaultMutableTre
 
     private List<String> options;
 
-    private static final TableColumnDefinition<String> COLUMN_NAME = new TableColumnDefinition<>("字段名"
+    private static final TableColumnDefinition<String> COLUMN_NAME = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.name")
             , ControlType.INPUT
             , ParameterItem::getName
             , ParameterItem::setName);
 
-    private static final TableColumnDefinition<FieldDataType> COLUMN_DATA_TYPE = new TableColumnDefinition<>("字段类型"
+    private static final TableColumnDefinition<FieldDataType> COLUMN_DATA_TYPE = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.type")
             , ControlType.SELECT
             , ParameterItem::getType
             , ParameterItem::setType
             , Arrays.stream(FieldDataType.values()).map(FieldDataType::name).collect(Collectors.toList()));
-    private static final TableColumnDefinition<String> COLUMN_DEFAULT_VALUE = new TableColumnDefinition<>("字段默认值"
+    private static final TableColumnDefinition<String> COLUMN_DEFAULT_VALUE = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.default")
             , ControlType.INPUT
             , ParameterItem::getDefaultValue
             , ParameterItem::setDefaultValue);
-    private static final TableColumnDefinition<String> COLUMN_COMMENT = new TableColumnDefinition<>("字段描述"
+    private static final TableColumnDefinition<String> COLUMN_COMMENT = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.desc")
             , ControlType.INPUT
             , ParameterItem::getComment
             , ParameterItem::setComment);
-    private static final TableColumnDefinition<Boolean> COLUMN_REQUIRED = new TableColumnDefinition<>("是否必须"
+    private static final TableColumnDefinition<Boolean> COLUMN_REQUIRED = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.required")
             , ControlType.RADIO
             , ParameterItem::isRequired
             , ParameterItem::setRequired
             , Arrays.asList("true", "false"));
-    private static final TableColumnDefinition<String> COLUMN_CLASS = new TableColumnDefinition<>("类名"
+    private static final TableColumnDefinition<String> COLUMN_PACKAGE = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.package")
             , ControlType.PACKAGE_SELECT
-            , ParameterItem::getQualifiedClassName
-            , ParameterItem::setQualifiedClassName);
+            , ParameterItem::getPackageName
+            , ParameterItem::setPackageName);
+    private static final TableColumnDefinition<String> COLUMN_CLASS = new TableColumnDefinition<>(
+            InterfaceBundle.message("interface.edit.panel.params.table.field.class")
+            , ControlType.INPUT
+            , ParameterItem::getClassName
+            , ParameterItem::setClassName);
 
     public static final TableColumnDefinition[] DEFAULT_COLUMNS = new TableColumnDefinition[]{
-            COLUMN_NAME, COLUMN_DATA_TYPE, COLUMN_DEFAULT_VALUE, COLUMN_COMMENT, COLUMN_REQUIRED, COLUMN_CLASS
+            COLUMN_NAME, COLUMN_DATA_TYPE, COLUMN_DEFAULT_VALUE, COLUMN_COMMENT, COLUMN_REQUIRED, COLUMN_PACKAGE, COLUMN_CLASS
     };
 
     public TableColumnDefinition(@NlsContexts.ColumnName String name, ControlType type
@@ -122,7 +134,7 @@ public final class TableColumnDefinition<T> extends ColumnInfo<DefaultMutableTre
     @Override
     public boolean isCellEditable(DefaultMutableTreeNode o) {
         ParameterItem parameterItem = getParameterItem(o);
-        if (o.isRoot()) {
+        if (o.isRoot() && Objects.nonNull(parameterItem) && parameterItem.isRoot()) {
             return false;
         } else if ((controlType == ControlType.INPUT
                 || controlType == ControlType.SELECT
@@ -157,8 +169,9 @@ public final class TableColumnDefinition<T> extends ColumnInfo<DefaultMutableTre
 
     public class PackageChooserComboBox extends AbstractTableCellEditor {
 
-        private PackageSetChooserCombo myScopeChooser;
         private ParameterItem parameterItem;
+
+        private DestinationFolderComboBox myPackageChooser;
 
         public PackageChooserComboBox(ParameterItem parameterItem) {
             this.parameterItem = parameterItem;
@@ -166,23 +179,26 @@ public final class TableColumnDefinition<T> extends ColumnInfo<DefaultMutableTre
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            myScopeChooser = new PackageSetChooserCombo(parameterItem.getProject(), value == null ? null : ((NamedScope) value).getScopeId(), false, false) {
+            ReferenceEditorComboWithBrowseButton myPackageComponent = new PackageNameReferenceEditorCombo(parameterItem.getPackageName()
+                    , parameterItem.getProject()
+                    , "CreateClassDialog.RecentsKey"
+                    , JavaBundle.message("dialog.create.class.package.chooser.title"));
+            myPackageComponent.setTextFieldPreferredWidth(40);
+            myPackageChooser = new DestinationFolderComboBox() {
                 @Override
-                protected NamedScope[] createModel() {
-                    final NamedScope[] model = super.createModel();
-                    final ArrayList<NamedScope> filteredScopes = new ArrayList<>(Arrays.asList(model));
-                    CustomScopesProviderEx.filterNoSettingsScopes(parameterItem.getProject(), filteredScopes);
-                    return filteredScopes.toArray(NamedScope.EMPTY_ARRAY);
+                public String getTargetPackage() {
+                    return parameterItem.getPackageName();
                 }
             };
-
-            ((JBComboBoxTableCellEditorComponent) myScopeChooser.getChildComponent()).setCell(table, row, column);
-            return myScopeChooser;
+            myPackageChooser.setData(parameterItem.getProject()
+                    , PackageUtil.findPossiblePackageDirectoryInModule(parameterItem.getModule(), parameterItem.getPackageName())
+                    , myPackageComponent.getChildComponent());
+            return myPackageChooser;
         }
 
         @Override
         public Object getCellEditorValue() {
-            return myScopeChooser.getSelectedScope();
+            return myPackageChooser.getTargetPackage();
         }
     }
 }

@@ -3,6 +3,7 @@ package com.flyingwillow.tdd.domain;
 import com.flyingwillow.tdd.editor.InterfaceVirtualFile;
 import com.flyingwillow.tdd.service.InterfaceNameReader;
 import com.flyingwillow.tdd.util.HttpMethodEnum;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.packageDependencies.ui.TreeModel;
 import com.intellij.psi.PsiClass;
@@ -36,6 +37,8 @@ public class InterfaceMetaInfo {
 
     private Project project;
 
+    private Module module;
+
     private InterfaceVirtualFile virtualFile;
 
     public InterfaceMetaInfo() {
@@ -50,8 +53,9 @@ public class InterfaceMetaInfo {
         this.type = type;
     }
 
-    public InterfaceMetaInfo(Project project, PsiJavaFile javaFile, InterfaceNameReader reader, PsiClass cls) {
-        this.project = project;
+    public InterfaceMetaInfo(Module module, PsiJavaFile javaFile, InterfaceNameReader reader, PsiClass cls) {
+        this.project = module.getProject();
+        this.module = module;
         this.id = reader.getControllerId(cls);
         this.type = InterfaceMetaType.CONTROLLER;
         this.leaf = false;
@@ -63,8 +67,9 @@ public class InterfaceMetaInfo {
         this.virtualFile = null;
     }
 
-    public InterfaceMetaInfo(Project project, PsiMethod method, PsiClass javaClass, InterfaceNameReader reader) {
-        this.project = project;
+    public InterfaceMetaInfo(Module module, PsiMethod method, PsiClass javaClass, InterfaceNameReader reader) {
+        this.project = module.getProject();
+        this.module = module;
         this.id = reader.getInterfaceId(method, javaClass);
         this.type = InterfaceMetaType.INTERFACE;
         this.leaf = false;
@@ -77,8 +82,9 @@ public class InterfaceMetaInfo {
         this.virtualFile = new InterfaceVirtualFile(this);
     }
 
-    public InterfaceMetaInfo(Project project, String packageName, List<PsiJavaFile> javaFiles, InterfaceNameReader reader) {
-        this.project = project;
+    public InterfaceMetaInfo(Module module, String packageName, List<PsiJavaFile> javaFiles, InterfaceNameReader reader) {
+        this.project = module.getProject();
+        this.module = module;
         this.id = CollectionUtils.isNotEmpty(javaFiles) ? reader.getPackageId(javaFiles.get(0)) : packageName;
         this.type = InterfaceMetaType.PACKAGE;
         this.leaf = false;

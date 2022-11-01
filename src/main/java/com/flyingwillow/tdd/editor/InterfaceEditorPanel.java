@@ -2,6 +2,7 @@ package com.flyingwillow.tdd.editor;
 
 import com.flyingwillow.tdd.domain.ParameterType;
 import com.flyingwillow.tdd.provider.InterfaceDataProvider;
+import com.flyingwillow.tdd.resource.InterfaceBundle;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBTabbedPane;
@@ -57,8 +58,8 @@ public class InterfaceEditorPanel extends JPanel implements InterfaceEditorPanel
         this.tabbedPanel = new JBTabbedPane(SwingConstants.TOP);
         tabbedPanel.setBorder(BorderFactory.createLineBorder(new JBColor(0xC9C9C9, 0x2C2F30)));
         tabbedPanel.setTabComponentInsets(JBUI.insets(0));
-        this.tabbedPanel.add("入参配置",this.inputParams);
-        this.tabbedPanel.add("出参配置",this.outputParams);
+        this.tabbedPanel.add(InterfaceBundle.message("interface.edit.panel.params.tab.input.title"),this.inputParams);
+        this.tabbedPanel.add(InterfaceBundle.message("interface.edit.panel.params.tab.output.title"),this.outputParams);
         this.add(tabbedPanel);
     }
 }

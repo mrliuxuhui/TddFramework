@@ -15,19 +15,19 @@ public class ParameterReaderFactory {
     }
 
     public InterfaceParameterReader getParameterReader(PsiType type){
-        return new DefaultPojoReader();
+        return new DefaultPojoReader(type);
     }
     public InterfaceParameterReader getParameterReader(PsiParameter parameter){
         if (ToolkitUtil.isSimpleType(parameter.getType())){
             return new DefaultSimpleParamReader(parameter);
         } else if(ToolkitUtil.isListableType(parameter.getType())){
-            return new DefaultPojoReader();
+            return new DefaultPojoReader(parameter, true);
         } else {
-            return new DefaultPojoReader();
+            return new DefaultPojoReader(parameter);
         }
     }
 
     public InterfaceParameterReader getFieldReader(PsiClass psiClass, PsiField field){
-        return new DefaultPojoFieldReader();
+        return new DefaultPojoFieldReader(psiClass, field);
     }
 }

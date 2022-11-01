@@ -19,7 +19,7 @@
                     anchor="right"
                     secondary="true"
                     icon="AllIcons.General.Layout"
-                    id="interface-window">
+                    id="TDD Interface Designer">
         </toolWindow>
         <fileEditorProvider implementation="com.flyingwillow.tdd.editor.InterfaceEditorProvider"/>
         <fileIconProvider implementation="com.flyingwillow.tdd.editor.InterfaceVirtualFileIconProvider"/>
@@ -30,45 +30,37 @@
         <group id="interface-toolbar" description="toolbar">
             <action
                     class="com.flyingwillow.tdd.action.ToolbarAction"
-                    id="close-all"
-                    text="close-all"
+                    id="interface.toolwindow.toolbar.close.all"
                     icon="AllIcons.Actions.Collapseall"/>
             <action
                     class="com.flyingwillow.tdd.action.ToolbarAction"
-                    id="expand-all"
-                    text="expand-all"
+                    id="interface.toolwindow.toolbar.expand.all"
                     icon="AllIcons.Actions.Expandall"/>
         </group>
 
         <group id="interface.popup.menu" description="popup menu" class="com.flyingwillow.tdd.action.InterfaceTreeActionGroup">
             <action class="com.flyingwillow.tdd.action.ClassAddAction"
                     id="interface.popup.class.add"
-                    text="class add"
                     icon="AllIcons.General.Add"/>
             <action class="com.flyingwillow.tdd.action.PackageDeleteAction"
                     id="interface.popup.package.del"
-                    text="package delete"
                     icon="AllIcons.Actions.GC"/>
             <action class="com.flyingwillow.tdd.action.MethodAddAction"
                     id="interface.popup.method.add"
-                    text="method add"
                     icon="AllIcons.General.Add"/>
             <action class="com.flyingwillow.tdd.action.ClassDeleteAction"
                     id="interface.popup.class.del"
-                    text="class delete"
                     icon="AllIcons.Actions.GC"/>
             <action class="com.flyingwillow.tdd.action.MethodDeleteAction"
                     id="interface.popup.method.del"
-                    text="method delete"
                     icon="AllIcons.Actions.GC"/>
             <action class="com.flyingwillow.tdd.action.MethodEditAction"
                     id="interface.popup.method.edit"
-                    text="method edit"
                     icon="AllIcons.Actions.Edit"/>
             <action class="com.flyingwillow.tdd.action.MethodEditTestAction"
                     id="interface.popup.method.edit.test"
-                    text="method test case edit"
                     icon="AllIcons.Nodes.Test"/>
         </group>
     </actions>
+    <resource-bundle>messages.InterfaceBundle</resource-bundle>
 </idea-plugin>

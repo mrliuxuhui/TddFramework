@@ -1,5 +1,6 @@
 package com.flyingwillow.tdd.domain;
 
+import com.flyingwillow.tdd.resource.InterfaceBundle;
 import com.intellij.psi.PsiMethod;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,14 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InterfaceFormData {
 
-    private String nameLabel = "接口名";
+    private String nameLabel = InterfaceBundle.message("interface.edit.panel.basic.name.label");
     private String name;
 
-    private String pathLabel = "接口路径";
+    private String pathLabel = InterfaceBundle.message("interface.edit.panel.basic.path.label");
     private String pathValue;
     private String httMethod;
 
-    private String classPathLabel = "类路径";
+    private String classPathLabel = InterfaceBundle.message("interface.edit.panel.basic.class.label");
     private String classPathValue;
     private String methodName;
 

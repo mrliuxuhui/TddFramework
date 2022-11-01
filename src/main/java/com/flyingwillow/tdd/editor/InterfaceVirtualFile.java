@@ -13,7 +13,7 @@ public class InterfaceVirtualFile extends LightVirtualFile implements VirtualFil
     private InterfaceDataProvider dataProvider;
 
     public InterfaceVirtualFile(InterfaceMetaInfo metaInfo) {
-        super();
+        super(metaInfo.getName());
         this.metaInfo = metaInfo;
         this.dataProvider = new DefaultInterfaceDataProvider(this.metaInfo);
     }

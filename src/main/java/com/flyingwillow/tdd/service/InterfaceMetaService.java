@@ -58,14 +58,14 @@ public final class InterfaceMetaService {
                 .map(f -> ((PsiJavaFile) PsiUtilCore.getPsiFile(module.getProject(), f)))
                 .collect(Collectors.toList());
 
-        final Map<PsiJavaFile, PsiClass> classList = javaFiles.stream().collect(Collectors.toMap(f -> f, f -> reader.getMainClass(f)));
+        final Map<PsiJavaFile, PsiClass> classList = javaFiles.stream().collect(Collectors.toMap(f -> f, reader::getMainClass));
         final List<InterfaceMetaInfo> controllerList = classList.entrySet()
-                .stream().map(e -> new InterfaceMetaInfo(module.getProject(), e.getKey(), reader, e.getValue())).collect(Collectors.toList());
+                .stream().map(e -> new InterfaceMetaInfo(module, e.getKey(), reader, e.getValue())).collect(Collectors.toList());
         final List<InterfaceMetaInfo> interfaceList = classList.entrySet()
-                .stream().flatMap(e -> createInterface(module.getProject(), e.getValue())).collect(Collectors.toList());
+                .stream().flatMap(e -> createInterface(module, e.getValue())).collect(Collectors.toList());
         final List<InterfaceMetaInfo> packageList = new ArrayList<>();
-        javaFiles.stream().collect(Collectors.groupingBy(f -> f.getPackageName()))
-                .forEach((key, list) -> packageList.add(new InterfaceMetaInfo(module.getProject(), key, list, reader)));
+        javaFiles.stream().collect(Collectors.groupingBy(PsiJavaFile::getPackageName))
+                .forEach((key, list) -> packageList.add(new InterfaceMetaInfo(module, key, list, reader)));
 
         List<InterfaceMetaInfo> list = new ArrayList<>(controllerList.size() + interfaceList.size() + packageList.size());
         list.addAll(packageList);
@@ -74,9 +74,9 @@ public final class InterfaceMetaService {
         return InterfaceMetaInfo.buildTree(list, module);
     }
 
-    private Stream<InterfaceMetaInfo> createInterface(Project project, PsiClass javaClass) {
-        return Arrays.stream(javaClass.getMethods()).filter(m -> reader.isValidInterface(m))
-                .map(m -> new InterfaceMetaInfo(project, m, javaClass, reader));
+    private Stream<InterfaceMetaInfo> createInterface(Module module, PsiClass javaClass) {
+        return Arrays.stream(javaClass.getMethods()).filter(reader::isValidInterface)
+                .map(m -> new InterfaceMetaInfo(module, m, javaClass, reader));
     }
 
     private DefaultMutableTreeNode createRootNode(Module module) {
